@@ -8,11 +8,11 @@ const comicSchema = new mongoose.Schema({
   description: { type: String },
   image: { type: String, required: true },
   issued: { type: Number },
-  createdBy: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: "user",
-    required: true,
-  },
+  // createdBy: {
+  //   type: mongoose.Schema.Types.ObjectId,
+  //   ref: "user",
+  //   required: true,
+  // },
 });
 
 const ComicModel = mongoose.model("comic", comicSchema);

@@ -1,21 +1,18 @@
-// let comics = require("./databases/apicreation");
-// let users = require("./databases/users");
-const UserModel = require("./models/usermodel");
-const ComicModel = require("./models/comicmodel");
 const { postUser, getUsers } = require("./controllers/usercontroller");
 const { postComic, getComics } = require("./controllers/comiccontroller");
 const { authUser } = require("./controllers/authcontroller");
 const express = require("express");
 require("dotenv").config();
+const Comic = require("./models/comicmodel");
 const comicsRouter = require("./routes/comics");
 const mongoose = require("mongoose");
 const cors = require("cors");
 
 const app = express();
 
-app.use(cors());
+// app.use(cors());
 app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
+app.use(express.urlencoded({ extended: false }));
 
 //connecting to MongoDB
 
@@ -29,16 +26,8 @@ mongoose.connect(
 app.set("view engine", "ejs");
 
 //Here I will be setting my default page
-app.get("/", (request, response) => {
-  const comics = [
-    {
-      name: "default name",
-      description: "default description",
-      image: "N/A",
-      issued: "N/A",
-      createdBy: "User",
-    },
-  ];
+app.get("/", async (request, response) => {
+  const comics = await Comic.find();
   response.render("comics/index", { comics: comics });
 });
 

@@ -28,25 +28,80 @@
     <div id="usernames"></div>
     <div id="comic-card"></div> -->
 
-    
-      <div class="container">
-        <h1 class="mb-4">Comic Cards</h1>
-        <a href="/comics/new" class="btn btn-success">New Comic Card</a>
-  
-        <% comics.forEach(comic => { %>
-        <div class="card mt-4">
-          <img src=<% comic.image %> class="card-img-top" alt="Comic Image">
-        <div class="card-body">
-          <h4 class="card-title"><%= comic.name %></h4>
-          <div class="card-subtitle text-muted mb-2">
-            <%= comic.issued%>
+    <div class="container">
+      <!-- Trigger the modal with a button -->
+      <button
+        type="button"
+        class="btn btn-info btn-lg"
+        data-toggle="modal"
+        data-target="#myModal"
+      >
+        Login
+      </button>
+    </div>
+
+    <!-- Modal -->
+    <div id="myModal" class="modal fade" role="dialog">
+      <div class="modal-dialog">
+        <!-- Modal content-->
+        <div class="modal-content">
+          <div class="modal-header">
+            <h4 class="modal-title text-center">Welcome Comic Enthusiast</h4>
+            <button type="button" class="close" data-dismiss="modal">
+              &times;
+            </button>
           </div>
-          <div class="card-text mb-2"><%= comic.description %></div> 
+          <div class="modal-body">
+            <label class="row">Username</label>
+            <input id="username" type="text" />
+
+            <label class="row">Password</label>
+            <input id="password" type="text" />
+
+            <div class="modal-footer">
+              <button
+                type="button"
+                class="btn btn-default justify-content-spacebetween"
+                data-dismiss="modal"
+                onclick="signUp()"
+              >
+                Create Account
+              </button>
+              <button
+                type="button"
+                class="btn btn-default"
+                data-dismiss="modal"
+                onclick="signIn()"
+              >
+                Sign In
+              </button>
+            </div>
+          </div>
         </div>
-        <div class="card mt-4"></div>
-        <%}) %>
       </div>
-  
+    </div>
+
+    <div class="container">
+      <h1 class="mb-4">Comic Cards</h1>
+      <a href="/comics/new" class="btn btn-success">New Comic Card</a>
+      <div class="">
+        <% comics.forEach(comic => { %>
+        <div class="card mt-4" style="width: 18rem">
+          <img
+            src="<%= comic.image %>"
+            class="card-img-top"
+            alt="Comic Image"
+          />
+          <div class="card-body">
+            <h4 class="card-title"><%= comic.name %></h4>
+            <div class="card-subtitle text-muted mb-2"><%= comic.issued %></div>
+            <div class="card-text mb-2"><%= comic.description %></div>
+          </div>
+          <div class="card mt-4"></div>
+          <% }) %>
+        </div>
+      </div>
+    </div>
 
     <!-- Optional JavaScript -->
     <!-- jQuery first, then Popper.js, then Bootstrap JS -->
@@ -65,5 +120,73 @@
       integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM"
       crossorigin="anonymous"
     ></script>
+    <script>
+      // This will be where someone can search for a comic but not a super necessary functional thing for now.
+      //   function search() {
+      //   const city = document.getElementById("input-city").value;
+      //   const guest = document.getElementById("select-guests").value;
+      //   localStorage.setItem("city", city);
+      //   localStorage.setItem("guestAmount", guest);
+      // }
+
+      async function signIn() {
+        const username = document.getElementById("username").value;
+        console.log("sign in called");
+        const password = document.getElementById("password").value;
+        const data = {
+          username,
+          password,
+        };
+        try {
+          const resp = await fetch("http://localhost:4000/authenticateuser", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify(data),
+          });
+          const userToken = await resp.json();
+
+          if (userToken.jwt) {
+            localStorage.setItem("jwt", userToken.jwt);
+            alert("success");
+            var modal = document.getElementById("myModal");
+            modal.style.display = "none";
+            document.getElementById("btn").innerHTML = username;
+          } else {
+            alert("FAILURE!!!");
+          }
+        } catch (error) {
+          console.log(error);
+        }
+      }
+
+      async function signUp() {
+        try {
+          const username = document.getElementById("username").value;
+          const password = document.getElementById("password").value;
+          const data = { username, password };
+          const resp = await fetch("http://localhost:4000/user", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify(data),
+          });
+          const newUser = await resp.json();
+          console.log(newUser);
+          if (newUser.username) {
+            alert("Thanks for Signing Up!");
+            var modal = document.getElementById("myModal");
+            modal.style.display = "none";
+            document.getElementById("btn").innerHTML = username;
+          } else {
+            alert("WHO ARE YOU?!");
+          }
+        } catch (error) {
+          console.log(error);
+        }
+      }
+    </script>
   </body>
 </html>
